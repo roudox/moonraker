@@ -1,0 +1,15 @@
+{
+  "baseUrl": "http://www.laterooms.com",
+  "featuresDir": "tests/features",
+  "stepsDir": "tests/steps",
+  "resultsDir": "results",
+  "reporter": "spec",
+  "threads": 1,
+
+  "browser": {
+    "browserName": "chrome",
+    "chromeOptions": {
+      "args": ["--test-type"]
+    }
+  }
+}

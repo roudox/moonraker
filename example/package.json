@@ -1,0 +1,10 @@
+{
+    "name": "MyTests",
+    "version": "0.0.1",
+    "dependencies": {
+        "private-repo": "git+ssh://git@github.com:LateRoomsGroup/automatedtestframework.git"
+    },
+    "scripts": {
+      "test": "node node_modules/moonraker/bin/run-tests.js"
+    }
+}

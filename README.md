@@ -1,10 +1,10 @@
 ## Moonraker
 
-...a lightweight BDD style web testing framework for node, with Yadda, Selenium, page objects and support for parallel testing.
+A lightweight BDD style web testing framework for node, with Yadda, Selenium-Webdriver, page objects and support for parallel testing.
 
 ### Install
 
-To use this framework you need to add this to your package.json:
+To use this framework you need to add this to your `package.json`:
 
 ```json
 "dependencies": {
@@ -19,13 +19,14 @@ To use this framework you need to add this to your package.json:
 
 ### Configuration
 
-Moonraker is configured using a config.json file in your project root to setup the base_url, feature/step directory paths and browser instance etc:
+Moonraker is configured using a `config.json` file in your project root to setup the baseUrl, feature/step directory paths and browser instance etc:
 
 ```json
 {
   "baseUrl": "http://www.laterooms.com",
   "featuresDir": "tests/features",
   "stepsDir": "tests/steps",
+  "resultsDir": "results",
   "reporter": "spec",
   "threads": 1,
 
@@ -42,7 +43,9 @@ The directory paths are used to tell Yadda where to find your feature and step d
 
 ### Example project
 
-You will find a full example test project in the `/example` folder with everything you need to start using Moonraker - sample feature/scenario, page objects and config.json in a suggested project structure. `$ npm test` will run the example tests in chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
+You will find a full example test project in the `/example` folder with everything you need to start using Moonraker - sample feature/scenario, page objects and config.json in a suggested project structure.
+
+`$ npm test` to run Moonraker. The example tests use chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
 
 ### Yadda
 
@@ -85,15 +88,17 @@ var define = function (steps) {
 exports.define = define;
 ```
 
-Although Yadda can support multiple libraries, Moonraker currently loads all step definitions found in the steps directory into one big shared library, just like cucumber, so you have to be careful of name clashes.
+Although Yadda can support multiple libraries, Moonraker currently loads all step definitions found in your steps directory into one big shared library, just like cucumber, so you have to be careful of step name clashes.
 
 ### Page objects
 
 Moonraker makes full use of the Page Object pattern to model and abstract interactions with pages to reduce duplicated code and make tests easy to update as/when the UI changes.
 
-Page objects are created as below:
+To create a page object:
 
 ```javascript
+// tests/pages/home.js
+
 var Page = require('moonraker').Page;
 
 module.exports = Page.create({
@@ -111,9 +116,15 @@ module.exports = Page.create({
 });
 ```
 
-Each page has a url (relative to your baseUrl set in the config), some elements and any convenient methods that may be required. Elements are found by css selectors and return a selenium webelement which can be interacted with as normal. These page objects can then be used in your step definitions:
+Each page has a url, some elements and any convenient methods that may be required. Like the home page example, urls should be relative to your 'baseUrl' set in the config, but 'external' pages can also be used by using the full url.
+
+Elements are found by css selector and return a selenium web-element which can be interacted with as [per usual](https://code.google.com/p/selenium/wiki/WebDriverJs).
+
+You can then use your page objects in your step definitions:
 
 ```javascript
+// tests/steps/home-search-steps.js
+
 var homePage = require('../pages/home');
 var searchResults = require('../pages/search-results');
 
@@ -140,6 +151,76 @@ var define = function (steps) {
 exports.define = define;
 ```
 
+### Components
+
+Components are exactly like page objects and allow you to group elements together into a component, then add that component to a page object.
+
+```javascript
+// tests/pages/components/nav.js
+
+var Component = require('moonraker').Component
+
+module.exports = Component.create({
+
+  selLanguage: { get: function () { return this.element('.locale select'); } },
+  selCurrency: { get: function () { return this.element('.currency select'); } }
+
+});
+```
+
+```javascript
+// tests/pages/home.js
+
+var Page = require('moonraker').Page;
+var nav = require('./components/nav');
+
+module.exports = Page.create({
+
+  url: { value: '/' },
+
+  nav: { get: function () { return this.component(nav, "section[class='header']"); } },
+
+  ...
+
+});
+```
+
+Components are added to a page just like elements are but using:
+`this.component(component, rootNode)` where 'component' is your component object, and 'rootNode' is a css selector representing your components root node on the page.
+All elements in your component are then scoped to this rootNode, so in the above example the element `selLanguage` with its `.locale select` selector is only found within the `section[class='header']` element.
+
+Your components can then be re-used across your page-objects and could appear in different places on the page.
+
+Using your components:
+
+```javascript
+// tests/steps/home-search-steps.js
+
+var homePage = require('../pages/home');
+
+var define = function (steps) {
+
+  steps.given("I visit the home page", function () {
+    homePage.visit();
+  });
+
+  steps.when("I select my currency", function () {
+    homePage.nav.selCurrency.click();
+    // etc..
+  });
+
+  ...
+
+```
+
+### Running in parallel
+
+To speed up your test runs Moonraker supports running in parallel. This is done at the feature level and to use it you only need to increase the number of 'threads' in the config.
+
+Moonraker simply splits your feature files over the amount of threads set and starts a Mocha child process (and browser) for each. If you have 4 feature files and want to use 2 threads, 2 features will be executed per thread/browser etc.
+
+Note - Mocha's standard reporters do not work correctly in parallel, but Moonraker's included 'html' reporter does.
+
 ### Assertions
 
 Moonraker uses the 'should' style of the [Chai](http://chaijs.com/guide/styles/) assertion library.
@@ -149,3 +230,4 @@ Moonraker uses the 'should' style of the [Chai](http://chaijs.com/guide/styles/)
 As the tests are run using Mocha, you can use any of Mocha's [reporters](http://visionmedia.github.io/mocha/#reporters).
 Just set the required reporter in the config. Moonraker also comes with a 'html' reporter (as Mocha's only works when run in the browser) that also works correctly when running in parallel.
 
+The html reporter mimics Mocha's and includes details of any errors and browser screen shots.

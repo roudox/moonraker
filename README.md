@@ -41,11 +41,14 @@ Moonraker is configured using a `config.json` file in your project root to setup
 
 The directory paths are used to tell Yadda where to find your feature and step definition (library) files. The browser object is used to setup the selenium driver and can be used like any selenium ['Desired Capabilities'](https://code.google.com/p/selenium/wiki/DesiredCapabilities).
 
+This example assumes using Chrome directly, to connect to a remote selenium server, just add your server address to the config:
+`"seleniumServer": "http://127.0.0.1:4444/wd/hub"`.
+
 ### Example project
 
 You will find a full example test project in the `/example` folder with everything you need to start using Moonraker - sample feature/scenario, page objects and config.json in a suggested project structure.
 
-`$ npm test` to run Moonraker. The example tests use chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
+`$ npm test` to run Moonraker. The example tests use Chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
 
 ### Yadda
 
@@ -88,7 +91,7 @@ var define = function (steps) {
 exports.define = define;
 ```
 
-Although Yadda can support multiple libraries, Moonraker currently loads all step definitions found in your steps directory into one big shared library, just like cucumber, so you have to be careful of step name clashes.
+Although Yadda can support multiple libraries, Moonraker currently loads all step definitions found in your steps directory into one big shared library, just like Cucumber, so you have to be careful of step name clashes.
 
 ### Page objects
 

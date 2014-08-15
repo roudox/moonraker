@@ -7,6 +7,12 @@ var childProcess = require('child_process')
   , rimraf       = require('rimraf')
   , builder      = require('../lib/html-reporter/builder');
 
+var workingDir = path.join(config.featuresDir, 'temp');
+
+if (fs.existsSync(workingDir)) {
+  rimraf.sync(workingDir);
+}
+
 mkdirp.sync(path.join(config.resultsDir, 'screenshots'));
 
 var features = glob.sync(config.featuresDir + "/**/*.feature");
@@ -15,8 +21,8 @@ var pid = null;
 
 queues.forEach(function(queue) {
 
-  var worker = childProcess.fork('./node_modules/moonraker/lib/env/mocha');
-  pid = worker.pid.toString();
+  var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha');
+  pid = thread.pid.toString();
   mkdirp.sync(path.join(config.featuresDir,'temp', pid));
 
   queue.forEach(function(featureFile) {
@@ -25,14 +31,14 @@ queues.forEach(function(queue) {
       fs.readFileSync(featureFile));
   });
 
-  worker.send({ mocha: true });
+  thread.send({ mocha: true });
 });
 
 process.on('exit', function() {
   if (config.reporter == 'html') {
     builder.createHtmlReport();
   }
-  rimraf.sync(path.join(config.featuresDir, 'temp'));
+  rimraf.sync(workingDir);
 });
 
 function split(features, threads) {

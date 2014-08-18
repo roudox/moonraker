@@ -30,6 +30,9 @@ Moonraker is configured using a `config.json` file in your project root to setup
   "reporter": "spec",
   "threads": 1,
 
+  "testTimeout": 60000,
+  "elementTimeout": 5000,
+
   "browser": {
     "browserName": "chrome",
     "chromeOptions": {
@@ -40,15 +43,25 @@ Moonraker is configured using a `config.json` file in your project root to setup
 ```
 
 The directory paths are used to tell Yadda where to find your feature and step definition (library) files. The browser object is used to setup the selenium driver and can be used like any selenium ['Desired Capabilities'](https://code.google.com/p/selenium/wiki/DesiredCapabilities).
+The timeout options are used to set the maximum test step time (before its marked as failed) and the maximum amount of time selenium will wait for elements - in milliseconds.
 
-This example assumes using Chrome directly, to connect to a remote selenium server, just add your server address to the config:
+This example config assumes using Chrome directly, to connect to a remote selenium server, just add your server address to the config:
 `"seleniumServer": "http://127.0.0.1:4444/wd/hub"`.
 
 ### Example project
 
-You will find a full example test project in the `/example` folder with everything you need to start using Moonraker - sample feature/scenario, page objects and config.json in a suggested project structure.
+You will find a full example project in the `/example` folder with everything you need to start using Moonraker - sample feature / scenario, page objects and config in a suggested project structure.
 
-`$ npm test` to run Moonraker. The example tests use Chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
+The example tests use Chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
+
+### Running Moonraker
+
+To start Moonraker, you can run `$ node node_modules/moonraker/bin/moonraker.js` or if you added the shortcut in your package.json (as per the example under 'Install') `$ npm test`.
+
+For running in a CI environment, all of the configuration options in your config.json can be overridden. Moonraker uses [nconf](https://github.com/flatiron/nconf) to manage the config and prioritizes command line args, then environment variables and finally your config file.
+
+So, to override the 'baseUrl' in the example config, start Moonraker with `$ node node_modules/moonraker/bin/moonraker.js --baseUrl http://www.example.com` and that will take precedence over any 'baseUrl' found in your environment variables or in your config.json.
+
 
 ### Yadda
 
@@ -91,11 +104,11 @@ var define = function (steps) {
 exports.define = define;
 ```
 
-Although Yadda can support multiple libraries, Moonraker currently loads all step definitions found in your steps directory into one big shared library, just like Cucumber, so you have to be careful of step name clashes.
+Although Yadda can support multiple libraries, Moonraker currently loads all step definitions found in your steps directory into one big shared library, just like Cucumber, so you have to be careful of step name clashes or you will get a 'Duplicate macro' error.
 
 ### Page objects
 
-Moonraker makes full use of the Page Object pattern to model and abstract interactions with pages to reduce duplicated code and make tests easy to update as/when the UI changes.
+Moonraker makes full use of the Page Object pattern to model and abstract interactions with pages to reduce duplicated code and make tests easy to update as and when the UI changes.
 
 To create a page object:
 
@@ -119,7 +132,7 @@ module.exports = Page.create({
 });
 ```
 
-Each page has a url, some elements and any convenient methods that may be required. Like the home page example, urls should be relative to your 'baseUrl' set in the config, but 'external' pages can also be used by using the full url.
+Each page has a url, some elements and any convenient methods that you may require. Like the home page example above, urls should be relative to your 'baseUrl' set in the config, but 'external' pages can also be used by using the full url.
 
 Elements are found by css selector and return a selenium web-element which can be interacted with as [per usual](https://code.google.com/p/selenium/wiki/WebDriverJs).
 
@@ -220,9 +233,13 @@ var define = function (steps) {
 
 To speed up your test runs Moonraker supports running in parallel. This is done at the feature level and to use it you only need to increase the number of 'threads' in the config.
 
-Moonraker simply splits your feature files over the amount of threads set and starts a Mocha child process (and browser) for each. If you have 4 feature files and want to use 2 threads, 2 features will be executed per thread/browser etc.
+Moonraker simply splits your feature files over the amount of threads set and starts a Mocha child process (and browser) for each. If you have 4 feature files and want to use 2 threads, 2 features will be executed per thread / browser etc.
 
-Note - Mocha's standard reporters do not work correctly in parallel, but Moonraker's included 'html' reporter does.
+Please note - Mocha's standard reporters do not work correctly in parallel, but Moonraker's included 'html' reporter does.
+
+Parallel testing works as expected for remote driver connections just as it does locally. If you have powerful enough hardware to run your tests on and a large, high performing selenium grid instance to open connections to, you can dramatically reduce your test execution time.
+
+You will only be as quick as your longest running feature though, so if you have features with tons of scenarios in them, you should be breaking them down into smaller, more manageable feature files.
 
 ### Assertions
 

@@ -5,6 +5,6 @@
         "private-repo": "git+ssh://git@github.com:LateRoomsGroup/automatedtestframework.git"
     },
     "scripts": {
-      "test": "node node_modules/moonraker/bin/run-tests.js"
+      "test": "node node_modules/moonraker/bin/moonraker.js"
     }
 }

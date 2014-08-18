@@ -6,6 +6,9 @@
   "reporter": "spec",
   "threads": 1,
 
+  "testTimeout": 60000,
+  "elementTimeout": 5000,
+
   "browser": {
     "browserName": "chrome",
     "chromeOptions": {

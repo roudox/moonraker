@@ -21,7 +21,7 @@ var pid = null;
 
 queues.forEach(function(queue) {
 
-  var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha');
+  var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha', process.argv);
   pid = thread.pid.toString();
   mkdirp.sync(path.join(config.featuresDir,'temp', pid));
 

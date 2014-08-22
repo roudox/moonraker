@@ -1,0 +1,65 @@
+<html>
+   <head>
+      <title>Moonraker Test Results</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <link rel="stylesheet" href="style.css" />
+   </head>
+   <body>
+      <div id="moonraker">
+         <ul id="moonraker-stats">
+            <li class="progress">
+               <canvas width="40" height="40"></canvas>
+            </li>
+            {{#with stats}}
+            <li class="passes"><a href="#">passes: </a><em>{{passes}}</em></li>
+            <li class="failures"><a href="#">failures: </a><em>{{failures}}</em></li>
+            <li class="duration">duration: <em>{{duration}}</em>s</li>
+            <li class="threads">threads: <em>{{threads}}</em></li>
+            {{/with}}
+         </ul>
+         <ul id="report">
+            {{#features}}
+            <li class="feature">
+               <h1>{{title}}</h1>
+               <ul>
+               {{#scenarios}}
+               <li class="scenario">
+                  <h1>{{title}}</h1>
+                  <ul>
+                     {{#steps}}
+                        {{#ifEqual status 'pass'}}
+                        <li class="step {{status}} {{speed}}">
+                           <h2>{{title}}<span class="duration">{{duration}}</span></h2>
+                        </li>
+                        {{/ifEqual}}
+                        {{#ifEqual status 'pending'}}
+                        <li class="step {{status}} pass"><h2>{{title}}</h2></li>
+                        {{/ifEqual}}
+                        {{#ifEqual status 'fail'}}
+                        <li class="step {{status}}">
+                           <h2>{{title}}</h2>
+                           <pre class="error">{{error}}</pre>
+                        </li>
+                        <li class="step fail">
+                           <h2>Screenshot</h2><pre style="display: none;">
+                           <img src="screenshots/{{screenshot}}" width="1280"></pre>
+                        </li>
+                        {{/ifEqual}}
+                     {{/steps}}
+                  </ul>
+               </li>
+               {{/scenarios}}
+               </ul>
+            </li>
+            {{/features}}
+         </ul>
+      </div>
+      <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+      <script>
+         $("h2").click(function() {
+            var display = 'none' == $(this).next("pre").css('display') ? 'block': 'none';
+            $(this).next("pre").css('display', display);
+         });
+      </script>
+   </body>
+</html>

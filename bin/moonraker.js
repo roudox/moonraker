@@ -19,7 +19,7 @@ var features = glob.sync(config.featuresDir + "/**/*.feature");
 var queues = split(features, config.threads);
 var pid = null;
 
-queues.forEach(function(queue) {
+queues.forEach(function(queue, index) {
 
   var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha', process.argv);
   pid = thread.pid.toString();
@@ -31,7 +31,7 @@ queues.forEach(function(queue) {
       fs.readFileSync(featureFile));
   });
 
-  thread.send({ mocha: true });
+  thread.send({ mocha: true, thread: index + 1 });
 });
 
 process.on('exit', function() {

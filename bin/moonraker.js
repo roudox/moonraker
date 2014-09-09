@@ -19,6 +19,8 @@ var features = glob.sync(config.featuresDir + "/**/*.feature");
 var queues = split(features, config.threads);
 var pid = null;
 
+var failed = false;
+
 queues.forEach(function(queue, index) {
 
   var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha', process.argv);
@@ -32,6 +34,9 @@ queues.forEach(function(queue, index) {
   });
 
   thread.send({ mocha: true, thread: index + 1 });
+  thread.on("exit", function(code) {
+    if (code > 0) failed = true;
+  });
 });
 
 process.on('exit', function() {
@@ -39,6 +44,9 @@ process.on('exit', function() {
     builder.createHtmlReport();
   }
   rimraf.sync(workingDir);
+  if (failed) {
+    throw new Error("Moonraker tests failed. :(");
+  }
 });
 
 function split(features, threads) {

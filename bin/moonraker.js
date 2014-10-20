@@ -1,11 +1,11 @@
-var childProcess = require('child_process')
-  , mkdirp       = require('mkdirp')
-  , config       = require('moonraker').config
-  , glob         = require('glob')
-  , fs           = require('fs')
-  , path         = require('path')
-  , rimraf       = require('rimraf')
-  , builder      = require('../lib/html-reporter/builder')
+var childProcess = require('child_process'),
+    mkdirp       = require('mkdirp'),
+    config       = require('moonraker').config,
+    glob         = require('glob'),
+    fs           = require('fs'),
+    path         = require('path'),
+    rimraf       = require('rimraf'),
+    builder      = require('../lib/html-reporter/builder');
 
 var workingDir = path.join(config.featuresDir, 'temp');
 

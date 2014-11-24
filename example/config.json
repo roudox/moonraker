@@ -3,16 +3,18 @@
   "featuresDir": "tests/features",
   "stepsDir": "tests/steps",
   "resultsDir": "results",
-  "reporter": "spec",
+  "reporter": "moonraker",
   "threads": 1,
 
   "testTimeout": 60000,
   "elementTimeout": 5000,
 
+  "tags": "!@wip",
+
   "browser": {
     "browserName": "chrome",
     "chromeOptions": {
-      "args": ["--test-type"]
+      "args": ["--no-sandbox"]
     }
   }
 }

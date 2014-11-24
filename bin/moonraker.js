@@ -5,7 +5,7 @@ var childProcess = require('child_process'),
     fs           = require('fs'),
     path         = require('path'),
     rimraf       = require('rimraf'),
-    builder      = require('../lib/html-reporter/builder');
+    builder      = require('../lib/reporter/builder');
 
 var workingDir = path.join(config.featuresDir, 'temp');
 
@@ -40,7 +40,7 @@ queues.forEach(function(queue, index) {
 });
 
 process.on('exit', function() {
-  if (config.reporter == 'html') {
+  if (config.reporter == 'moonraker') {
     builder.createHtmlReport();
   }
   rimraf.sync(workingDir);

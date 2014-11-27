@@ -1,0 +1,48 @@
+@font-face {
+  font-family: "Gotham-Light";
+  src: url("scss/fonts/GothamLight.eot?v=1.5.2");
+  src: url("scss/fonts/GothamLight.eot?v=1.5.2#iefix") format("embedded-opentype"), url("scss/fonts/GothamLight.ttf?v=1.5.2") format("truetype"), url("scss/fonts/GothamLight.woff?v=1.5.2") format("woff"), url("scss/fonts/GothamLight.svg?v=1.5.2#GothamLight") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Gotham-Medium";
+  src: url("scss/fonts/GothamMedium.eot?v=1.5.2");
+  src: url("scss/fonts/GothamMedium.eot?v=1.5.2#iefix") format("embedded-opentype"), url("scss/fonts/GothamMedium.ttf?v=1.5.2") format("truetype"), url("scss/fonts/GothamMedium.woff?v=1.5.2") format("woff"), url("scss/fonts/GothamMedium.svg?v=1.5.2#GothamMedium") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Gotham-Bold";
+  src: url("scss/fonts/GothamBold.eot?v=1.5.2");
+  src: url("scss/fonts/GothamBold.eot?v=1.5.2#iefix") format("embedded-opentype"), url("scss/fonts/GothamBold.ttf?v=1.5.2") format("truetype"), url("scss/fonts/GothamBold.woff?v=1.5.2") format("woff"), url("scss/fonts/GothamBold.svg?v=1.5.2#GothamBold") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+	line-height: 1.4;
+	font-family: "Gotham-Light";
+}
+
+h1 {
+    font-size: 30px;
+    border-bottom: 1px dotted #ddd;
+    padding-bottom: 22px;
+}
+
+h2 {
+	font-size: 24px;
+    font-family: "Gotham-Medium";
+}
+
+h3 {
+    font-size: 18px;
+    font-family: "Gotham-Medium";
+}
+
+strong {
+    font-family: "Gotham-Bold";
+}

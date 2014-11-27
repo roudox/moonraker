@@ -1,0 +1,212 @@
+$icon-font-path: "/bower_components/sass-bootstrap/fonts/";
+$font-size-base: 16px !default;
+
+@import "bower_components/sass-bootstrap/lib/bootstrap";
+@import "lib/reporter/assets/scss/_typography";
+
+$primary: #1abc9c;
+$secondary: #3498DB;
+$success: #2ecc71;
+$failure: #e74c3c;
+$background: #ECF0F1;
+
+.navbar {
+    background: $primary;
+    color: white;
+    border: 0;
+    .navbar-brand {
+        color: white;
+    }
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.navbar-brand {
+    margin: 15px 0;
+    padding: 0;
+    float: none;
+    display: inline-block;
+    color: white;
+}
+
+.stats {
+    margin: 0 0 15px 0;
+    padding: 0;
+    li {
+        list-style-type: none;
+    }
+}
+
+.reporter {
+    margin-top: 170px;
+}
+
+.info {
+    margin: 20px 0 30px;
+}
+
+ul {
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    list-style-type: none;
+}
+
+.feature {
+    border-bottom: 1px dotted #ddd;
+    padding-bottom: 20px;
+    h2 span {
+        color: $secondary;
+    }
+}
+
+.dd {
+    cursor: pointer;
+}
+
+.dd-content {
+    display: none;
+}
+
+.scenario-header {
+    background: $background;
+    @extend .noselect;
+}
+
+.scenario-header .scenario-text {
+    span {
+        color: $secondary;
+    }
+}
+
+.scenario {
+    .scenario-text {
+        span {
+            color: $secondary;
+        }
+        .label {
+            color: white;
+            margin-left: 15px;
+        }
+    }
+}
+
+.error-info {
+    margin-top: 35px;
+    code {
+        word-break: break-word;
+        display: block;
+        clear: both;
+        white-space: inherit;
+        padding: 15px;
+        height: 450px;
+        overflow-y: scroll;
+    }
+    img {
+        width: 100%;
+    }
+}
+
+.scenario .label {
+    clear: both;
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px auto 0;
+}
+
+.label-success {
+    background: $success;
+}
+
+.label-danger {
+    background: $failure;
+}
+
+.scenario-header {
+    cursor: pointer;
+}
+
+.scenario-content {
+    display: none;
+}
+
+.table-bordered thead tr th {
+    border-bottom-width: 1px;
+}
+
+.stats {
+    margin: 0px 0 15px;
+    padding: 10px 0 0;
+    border-top: 1px dotted #ddd;
+    strong {
+        text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+    }
+}
+
+@media screen and (min-width: 768px) {
+
+    .stats {
+        margin: 0px 0 15px;
+        padding: 0;
+        border-top: 0;
+    }
+
+    .scenario .table {
+        td, th {
+            padding: 13px;
+        }
+    }
+
+    .scenario-text {
+        float: left;
+    }
+
+    .scenario .label {
+        float: right;
+        clear: none;
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 0 auto;
+    }
+
+    .reporter {
+        margin-top: 70px;
+    }
+
+    .navbar-brand {
+        padding: 14px 15px 17px;
+        margin: 0;
+        float: left;
+        display: inline;
+    }
+
+    .stats {
+        margin: 23px 0 0 0;
+        float: right;
+        li {
+            list-style-type: none;
+            float: left;
+            &:after {
+                content: '/';
+                padding: 0 13px;
+            }
+            &:last-child {
+                padding: 0;
+                &:after {
+                    content: '';
+                    padding: 0;
+                }
+            }
+        }
+    }
+
+}

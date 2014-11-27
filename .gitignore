@@ -2,3 +2,7 @@ node_modules
 results/*.html
 results/*.css
 results/screenshots/*.png
+bower_components
+.tmp
+.sass-cache
+.DS_Store

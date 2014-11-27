@@ -35,11 +35,11 @@
     </nav>
 
     <section class="reporter container">
-        <h1>Moonraker - Test runner</h1>
+        <h1>Moonraker - Test Report</h1>
 
         {{#features}}
         <section class="feature">
-            <h2><span>Feature:</span> {{title}} <span class="thread-number">(thread: {{thread}})</span></h2>
+            <h2><span>Feature:</span> {{title}}</h2>
             <ul class="info">
             {{#each description}}
                 <li>{{ this }}</li>
@@ -87,7 +87,6 @@
                         <tr>
                             <td>
                                 <div class="scenario-text">{{title}}</div>
-                                <span class="label label-danger">Failed</span>
                                 <span class="label label-danger">Failed</span>
                                 <div class="error-info">
                                     <h3>Error:</h3>

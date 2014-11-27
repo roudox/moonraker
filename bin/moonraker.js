@@ -1,10 +1,9 @@
 var childProcess = require('child_process'),
-    mkdirp       = require('mkdirp'),
     config       = require('moonraker').config,
     glob         = require('glob'),
     fs           = require('fs'),
     path         = require('path'),
-    rimraf       = require('rimraf'),
+    wrench       = require('wrench'),
     builder      = require('../lib/reporter/builder');
 
 var workingDir = path.join(config.featuresDir, 'temp');
@@ -18,7 +17,7 @@ queues.forEach(function(queue, index) {
 
   var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha', process.argv);
   var pid = thread.pid.toString();
-  mkdirp.sync(path.join(config.featuresDir,'temp', pid));
+  wrench.mkdirSyncRecursive(path.join(config.featuresDir,'temp', pid));
 
   queue.forEach(function(featureFile) {
     filename = featureFile.split('/').pop();
@@ -36,7 +35,7 @@ process.on('exit', function() {
   if (config.reporter == 'moonraker') {
     builder.createHtmlReport();
   }
-  rimraf.sync(workingDir);
+  removeDir(workingDir);
   if (failed) {
     throw new Error("Moonraker tests failed. :(");
   }
@@ -55,11 +54,11 @@ function split(features, threads) {
 function resetWorkSpace() {
   removeDir(workingDir);
   removeDir(config.resultsDir);
-  mkdirp.sync(path.join(config.resultsDir, 'screenshots'));
+  wrench.mkdirSyncRecursive(path.join(config.resultsDir, 'screenshots'));
 }
 
 function removeDir(dir) {
   if (fs.existsSync(dir)) {
-    rimraf.sync(dir);
+    wrench.rmdirSyncRecursive(dir);
   }
 }

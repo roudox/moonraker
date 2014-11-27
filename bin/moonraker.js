@@ -8,23 +8,16 @@ var childProcess = require('child_process'),
     builder      = require('../lib/reporter/builder');
 
 var workingDir = path.join(config.featuresDir, 'temp');
-
-if (fs.existsSync(workingDir)) {
-  rimraf.sync(workingDir);
-}
-
-mkdirp.sync(path.join(config.resultsDir, 'screenshots'));
+resetWorkSpace();
 
 var features = glob.sync(config.featuresDir + "/**/*.feature");
-var queues = split(features, config.threads);
-var pid = null;
-
-var failed = false;
+var queues   = split(features, config.threads);
+var failed   = false;
 
 queues.forEach(function(queue, index) {
 
   var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha', process.argv);
-  pid = thread.pid.toString();
+  var pid = thread.pid.toString();
   mkdirp.sync(path.join(config.featuresDir,'temp', pid));
 
   queue.forEach(function(featureFile) {
@@ -39,7 +32,7 @@ queues.forEach(function(queue, index) {
   });
 });
 
-process.on('exit', function() {
+process.on('exit', function() { 
   if (config.reporter == 'moonraker') {
     builder.createHtmlReport();
   }
@@ -57,4 +50,16 @@ function split(features, threads) {
     i += size;
   }
   return queues;
+}
+
+function resetWorkSpace() {
+  removeDir(workingDir);
+  removeDir(config.resultsDir);
+  mkdirp.sync(path.join(config.resultsDir, 'screenshots'));
+}
+
+function removeDir(dir) {
+  if (fs.existsSync(dir)) {
+    rimraf.sync(dir);
+  }
 }

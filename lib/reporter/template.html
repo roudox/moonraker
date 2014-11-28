@@ -57,7 +57,7 @@
                                 <span class="label label-success">Success</span>
                                 {{/ifEqual}}
                                 {{#ifEqual status 'pending'}}
-                                <span class="label label-warning">Pending</span>
+                                <span class="label label-primary">Pending</span>
                                 {{/ifEqual}}
                                 {{#ifEqual status 'fail'}}
                                 <span class="label label-danger">Fail</span>
@@ -79,7 +79,7 @@
                         <tr>
                             <td>
                                 <div class="scenario-text">{{title}}</div>
-                                <span class="label label-warning">Pending</span>
+                                <span class="label label-primary">Pending</span>
                             </td>
                         </tr>
                         {{/ifEqual}}
@@ -94,6 +94,14 @@
                                     <h3>Screenshot:</h3>
                                     <img src="screenshots/{{screenshot}}">
                                 </div>
+                            </td>
+                        </tr>
+                        {{/ifEqual}}
+                        {{#ifEqual status 'skipped'}}
+                        <tr>
+                            <td>
+                                <div class="scenario-text">{{title}}</div>
+                                <span class="label label-warning">Skipped</span>
                             </td>
                         </tr>
                         {{/ifEqual}}

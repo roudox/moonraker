@@ -1,47 +1,65 @@
-var childProcess = require('child_process'),
-    config       = require('moonraker').config,
-    glob         = require('glob'),
+var config       = require('moonraker').config,
+    session      = require('moonraker').session,
+    childProcess = require('child_process'),
     fs           = require('fs'),
     path         = require('path'),
     wrench       = require('wrench'),
+    Yadda        = require('yadda'),
     builder      = require('../lib/reporter/builder');
 
-var workingDir = path.join(config.featuresDir, 'temp');
 resetWorkSpace();
 
-var features = glob.sync(config.featuresDir + "/**/*.feature");
-var queues   = split(features, config.threads);
+var features = parseFeatures(config.featuresDir);
+var queues   = createQueues(features, config.threads);
 var failed   = false;
+var tags;
 
 queues.forEach(function(queue, index) {
-
   var thread = childProcess.fork('./node_modules/moonraker/lib/env/mocha', process.argv);
-  var pid = thread.pid.toString();
-  wrench.mkdirSyncRecursive(path.join(config.featuresDir,'temp', pid));
-
-  queue.forEach(function(featureFile) {
-    filename = featureFile.split('/').pop();
-    fs.writeFileSync(path.join(config.featuresDir, 'temp', pid, filename),
-      fs.readFileSync(featureFile));
-  });
-
-  thread.send({ mocha: true, thread: index + 1 });
+  thread.send({ mocha: true, thread: index + 1, queue: queue });
   thread.on("exit", function(code) {
     if (code > 0) failed = true;
   });
 });
 
 process.on('exit', function() { 
-  if (config.reporter == 'moonraker') {
+  if (config.reporter === 'moonraker') {
     builder.createHtmlReport();
   }
-  removeDir(workingDir);
   if (failed) {
     throw new Error("Moonraker tests failed. :(");
   }
 });
 
-function split(features, threads) {
+function resetWorkSpace() {
+  if (fs.existsSync(config.resultsDir)) {
+    wrench.rmdirSyncRecursive(config.resultsDir);
+  }
+  wrench.mkdirSyncRecursive(path.join(config.resultsDir, 'screenshots'));
+}
+
+function parseFeatures(dir) {
+  if (config.tags) {
+    tags = sortTagOpts(config.tags);
+  }
+  var features = [];
+
+  new Yadda.FeatureFileSearch(dir).each(function (file) {
+    var English = require('yadda').localisation.English;
+    var parser = new Yadda.parsers.FeatureFileParser(English);
+    var feature = parser.parse(file);
+
+    if (!config.tags) {
+      features.push(feature);
+    } else if (shouldInclude(feature.annotations)) {
+      features.push(feature);
+    }
+
+  });
+  return features;
+}
+
+function createQueues(features, threads) {
   var len = features.length, queues = [], i = 0;
   while (i < len) {
     var size = Math.ceil((len - i) / threads--);
@@ -51,14 +69,33 @@ function split(features, threads) {
   return queues;
 }
 
-function resetWorkSpace() {
-  removeDir(workingDir);
-  removeDir(config.resultsDir);
-  wrench.mkdirSyncRecursive(path.join(config.resultsDir, 'screenshots'));
+function shouldInclude(annotations) {  
+  if (annotations.pending) return true;
+  if (isTagMatch(tags.ignore, annotations)) return false;
+  if (isTagMatch(tags.include, annotations)) return true;
+  if (tags.include.length < 1) return true;
 }
 
-function removeDir(dir) {
-  if (fs.existsSync(dir)) {
-    wrench.rmdirSyncRecursive(dir);
-  }
+function sortTagOpts(tagOpts) {
+  var tags = { include: [], ignore: [] };
+  tagOpts.split(',').forEach(function (tag) {
+    if (tag.indexOf('!@') > -1) {
+      tags.ignore.push(stripTag(tag));
+    } else {
+      tags.include.push(stripTag(tag));
+    }
+  });
+  return tags;
+}
+
+function stripTag(tag) {
+  return tag.replace('!', '').replace('@', '');
+}
+
+function isTagMatch(tagsArr, annotations) {
+  var match = false;
+  Object.keys(annotations).forEach(function (key) {
+    if (tagsArr.indexOf(key) > -1) match = true;
+  });
+  return match;
 }

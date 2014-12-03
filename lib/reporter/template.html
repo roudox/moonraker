@@ -27,6 +27,7 @@
             <ul class="stats">
                 <li><span>Passes:</span> <strong>{{passes}}</strong></li>
                 <li><span>Failures:</span> <strong>{{failures}}</strong></li>
+                <li><span>Skipped:</span> <strong>{{skipped}}</strong></li>
                 <li>Duration: <strong>{{duration}}s</strong></li>
                 <li>Threads: <strong>{{threads}}</strong></li>
             </ul>
@@ -60,7 +61,7 @@
                                 <span class="label label-primary">Pending</span>
                                 {{/ifEqual}}
                                 {{#ifEqual status 'fail'}}
-                                <span class="label label-danger">Fail</span>
+                                <span class="label label-danger">Failed</span>
                                 {{/ifEqual}}
                             </th>
                         </tr>

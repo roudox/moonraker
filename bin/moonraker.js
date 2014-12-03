@@ -22,13 +22,9 @@ queues.forEach(function(queue, index) {
   });
 });
 
-process.on('exit', function() { 
-  if (config.reporter === 'moonraker') {
-    builder.createHtmlReport();
-  }
-  if (failed) {
-    throw new Error("Moonraker tests failed. :(");
-  }
+process.on('exit', function() {
+  if (config.reporter === 'moonraker') builder.createHtmlReport();
+  if (failed) process.exit(2);
 });
 
 function resetWorkSpace() {
@@ -39,9 +35,7 @@ function resetWorkSpace() {
 }
 
 function parseFeatures(dir) {
-  if (config.tags) {
-    tags = sortTagOpts(config.tags);
-  }
+  if (config.tags) tags = sortTagOpts(config.tags);
   var features = [];
 
   new Yadda.FeatureFileSearch(dir).each(function (file) {
@@ -69,7 +63,7 @@ function createQueues(features, threads) {
   return queues;
 }
 
-function shouldInclude(annotations) {  
+function shouldInclude(annotations) {
   if (annotations.pending) return true;
   if (isTagMatch(tags.ignore, annotations)) return false;
   if (isTagMatch(tags.include, annotations)) return true;

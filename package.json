@@ -1,14 +1,14 @@
 {
   "name": "moonraker",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "homepage": "https://github.com/LateRoomsGroup/moonraker",
+  "description": "An easy to use lightweight web testing framework for Node, designed for speed, maintainability and collaboration.",
   "keywords": [
     "selenium",
     "webdriver",
     "bdd",
     "parallel"
   ],
-  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/LateRoomsGroup/moonraker.git"
@@ -22,7 +22,7 @@
     "selenium-webdriver": "2.43.5",
     "mocha": "1.21.4",
     "chai": "1.9.1",
-    "glob": "4.0.2",    
+    "glob": "4.0.2",
     "nconf": "0.6.9",
     "handlebars": "2.0.0",
     "wrench": "1.5.8"

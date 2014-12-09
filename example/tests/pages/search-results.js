@@ -1,6 +1,6 @@
 var Page = require('moonraker').Page;
 
-module.exports = Page.create({
+module.exports = new Page({
 
   heading: { get: function () { return this.element("h1"); } }
 

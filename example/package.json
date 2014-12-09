@@ -2,7 +2,7 @@
     "name": "MyTests",
     "version": "0.0.1",
     "dependencies": {
-        "private-repo": "git+ssh://git@github.com:LateRoomsGroup/moonraker.git"
+        "moonraker": "latest"
     },
     "scripts": {
       "test": "node node_modules/moonraker/bin/moonraker.js"

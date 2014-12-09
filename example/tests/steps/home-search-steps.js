@@ -1,7 +1,7 @@
 var homePage = require('../pages/home');
 var searchResults = require('../pages/search-results');
 
-var define = function (steps) {
+exports.define = function (steps) {
 
   steps.given("I visit the home page", function () {
     homePage.visit();
@@ -19,5 +19,3 @@ var define = function (steps) {
   });
 
 };
-
-exports.define = define;

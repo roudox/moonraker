@@ -40,7 +40,7 @@ Moonraker is configured using a `config.json` file in your project root:
 * `featuresDir`    - The path to your features directory.
 * `stepsDir`       - The path to your step definitions directory.
 * `resultsDir`     - The path you'd like your results output to.
-* `reporter`       - The reporter type you'd like Moonraker to use (more on this below).
+* `reporter`       - The reporter type you'd like Moonraker to use (more on this [below](#reporting)).
 * `threads`        - The number of threads you'd like to run with.
 * `testTimeout`    - The maximum test (scenario step) timeout before its marked as a fail (ms).
 * `elementTimeout` - The maximum time selenium will continuously try to find an element on the page.
@@ -52,6 +52,8 @@ The example configuration above assumes using Chrome directly, to connect to a r
 `"seleniumServer": "http://127.0.0.1:4444/wd/hub"`.
 
 All of Moonraker's configuration options can be overridden when running your tests (see below) if you add command line args (e.g: `--baseUrl=http://www.example.com` or `--browser.browserName=phantomjs`) or have set environment variables. They will take preference over the `config.json`, in that order - command line args > env vars > config.
+
+You can also add whatever you like to the config and access it in your code using: `var config = require('moonraker').config;`.
 
 ### Run your tests
 
@@ -71,8 +73,6 @@ To start Moonraker run `$ node node_modules/moonraker/bin/moonraker.js`, or to m
 You will find a full example project in the `/example` folder with everything you need to start using Moonraker - sample feature, step definitions, page objects and config in a suggested project structure.
 
 The example tests use Chrome, so you will need the latest [chromedriver](http://chromedriver.storage.googleapis.com/index.html) downloaded and available on your path.
-
-
 
 ### Writing your tests
 
@@ -137,9 +137,9 @@ module.exports = new Page({
 });
 ```
 
-Each page has a url, some elements and any convenient methods that you may require. Like the home page example above, urls should be relative to your 'baseUrl' set in your config, but "external" pages can also be used by using a full url.
+Each page has a url, some elements and any convenient methods that you may require.
 
-Elements are found by css selector and return a selenium web-element which can be interacted with as [per usual](https://code.google.com/p/selenium/wiki/WebDriverJs).
+Elements are found by css selector and return a selenium web-element which can be interacted with as [per usual](https://code.google.com/p/selenium/wiki/WebDriverJs). A full reference can be found [below](#page-object-reference).
 
 You can then use your page objects in your step definitions:
 
@@ -251,7 +251,7 @@ At best, you will only be as quick as your longest running feature though, so if
 
 ### Reporting
 
-As the tests are run using Mocha, you can use any of Mocha's [reporters](http://visionmedia.github.io/mocha/#reporters).
+As the tests are run using Mocha, you can use any of Mocha's [reporters](http://mochajs.org/#reporters).
 Just set the required reporter in the config.
 As Mocha is designed to run serially though you will experience issues when running Moonraker in parallel, so Moonraker comes with its own custom reporter for Mocha.
 
@@ -259,4 +259,96 @@ To use it set the reporter in your config to `moonraker`. This reporter includes
 
 ![Moonraker report](https://dl.dropboxusercontent.com/u/6598543/report.png)
 
-The html report includes details of any errors and browser screen shots.
+The html report includes details of any errors and includes browser screen shots.
+
+### Page object reference
+
+As the examples show, all interactions with page elements (and the underlying driver) are abstracted away in your page objects. When you create a page object you have various ways of attaching elements to it so they can be interacted with in your step definitions:
+
+```javascript
+var Page = require('moonraker').Page;
+
+module.exports = new Page({
+
+  url: { value: '/search' },
+
+  aTxtInput:  { get: function () { return this.element("input[id='txtSearch']"); } },
+  buttons:    { get: function () { return this.elements("button"); } },
+  aSelect:    { get: function () { return this.select("select[name='rt-child']"); } },
+  aLink:      { get: function () { return this.link("London Hotels"); } },
+  aComponent: { get: function () { return this.component(yourComponent, "div[class='container']"); } },
+
+});
+```
+
+* Setting a url value is for when you call `visit()` on your page object. e.g: `examplePage.visit();`. These url's are relative to the baseUrl set in your config, but if you set a full url like `http://www.example.com` the baseUrl will be ignored. Additionally, `visit()` can take an optional query object: `examplePage.visit({ foo: 'bar', baz: 'qux' });` will visit `http://yourBaseUrl/search?foo=bar&baz=qux`.
+
+* `element(cssSelector)` - is used to find a specific element by css selector and returns a selenium element. e.g: `examplePage.aTxtInput.click();`
+
+* `elements(cssSelector)` - is used to find all elements that satisfy the selector and returns a collection of selenium elements. e.g:
+```javascript
+examplePage.buttons.then(function (elems) {
+  elems.forEach(function (elem) {
+    // etc..
+  });
+});
+```
+
+* `select(cssSelector)` - is the same as `element` but includes a helper `selectOption(optionValue)` to select an option by value from your select elements. e.g: `examplePage.aSelect.selectOption(3);`
+
+* `link(linkText)` - is used to find links by full or partial link text.
+
+* `component(yourComponent, rootNode)` - Attaches a component you have defined to your page. Please see [components](#components).
+
+There are some additional helper methods you can use:
+
+* `title(handler)` - To get the page title. e.g:
+```javascript
+examplePage.title(function (t) {
+  console.log(t);
+});
+```
+
+* `waitFor(fn, timeout)` - Exposes selenium's `driver.wait`, to explicitly wait for a specific condition to be true. e.g:
+```javascript
+search: { value: function (query) {
+    var _this = this;
+    this.waitFor(function () {
+      return _this.aTxtInput.isDisplayed();
+    }, 5000);
+    this.aTxtInput.sendKeys(query);
+} }
+```
+
+* `alert()` - Attempts to switch to the current alert dialog. e.g: `examplePage.alert.accept();`.
+
+Components are the same and have access to the same element methods, but not the page specific ones: `visit()`, `title()`, `alert()` & `component()`.
+Please see the official [selenium webdriver](https://code.google.com/p/selenium/wiki/WebDriverJs) documentation for further information on working with elements.
+
+### Session reference
+
+Moonraker uses a session object to group functions related to the current test session and can be used in your step definitions etc:
+```javascript
+var session = require('moonraker').session;
+session.resizeWindow(320, 480);
+```
+
+* `execute(fn)` - Adds any function to webdriver's control flow. Please see [control flows](https://code.google.com/p/selenium/wiki/WebDriverJs#Control_Flows).
+* `resizeWindow(x, y)` - Resizes the browser window. By default its maximized.
+* `refresh()` - Refreshes the current page.
+* `saveScreenshot(filename)` - Saves a screenshot to `/yourResultsDir/screenshots/filename`. This is called automatically on test failure.
+* `deleteAllCookies()` - Deletes all cookies.
+* `addCookie(name, value, optDomain, optPath, optIsSecure)` - Adds a cookie.
+* `getCookie(name)` - Gets a cookie by name.
+* `currentUrl(handler)` - Gets the current url as a parsed [url](http://nodejs.org/api/url.html) object. e.g:
+```javascript
+session.currentUrl(function (url) {
+  console.log(url);
+});
+```
+* `savePerfLog(filename)` - Saves the driver performance logs to `/yourResultsDir/perf_logs/filename`. This has been tested with Chrome to import logs into a local instance of [webpagetest](http://www.webpagetest.org/) to generate performance waterfall charts etc.
+
+### TODO
+
+* Further element helpers - integrating the new [until](https://github.com/SeleniumHQ/selenium/blob/master/javascript/node/selenium-webdriver/CHANGES.md#v2440) module.
+* Further example features, steps & pages.

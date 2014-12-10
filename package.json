@@ -1,6 +1,6 @@
 {
   "name": "moonraker",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "homepage": "https://github.com/LateRoomsGroup/moonraker",
   "description": "An easy to use lightweight web testing framework for Node, designed for speed, maintainability and collaboration.",
   "keywords": [
@@ -18,12 +18,12 @@
   },
   "main": "lib/moonraker.js",
   "dependencies": {
-    "yadda": "0.11.2",
-    "selenium-webdriver": "2.43.5",
-    "mocha": "1.21.4",
-    "chai": "1.9.1",
-    "glob": "4.0.2",
-    "nconf": "0.6.9",
+    "yadda": "0.11.3",
+    "selenium-webdriver": "2.44.0",
+    "mocha": "2.0.1",
+    "chai": "1.10.0",
+    "glob": "4.3.1",
+    "nconf": "0.7.1",
     "handlebars": "2.0.0",
     "wrench": "1.5.8"
   },
